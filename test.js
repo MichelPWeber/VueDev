@@ -13,3 +13,8 @@ alert("Do the ajax call here.");
 function jsonCallback(json){
   console.log(json);
 }
+
+var app = new Vue({
+  el: '#app',
+  data: {message: "Vue is working!"}
+});
