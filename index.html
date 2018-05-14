@@ -9,8 +9,21 @@
     <div id="accessCode" style="display:hidden;"></div>
   </header>
   <h1>Vue project</h1>
-    <div id="app">
-      {{ message }}
-    </div>
+   <div id="main">
+
+  <div id="app">
+    <p>Vessels of Washington State</p>
+   {{message}}
+
+  <ul>
+    <vessel-item
+      v-for="vessel in vessels"
+      v-bind:vessel="vessel"
+      v-bind:key="vessel.VesselID">
+    </vessel-item>
+  </ul>
+  </div> 
+ <button>Update</button>
+</div>
   </body>
 </html>
