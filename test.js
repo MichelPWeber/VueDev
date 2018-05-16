@@ -1,13 +1,15 @@
 var app;
-var button = $("div button")
+var button;
 
 $(document).ready(function(){
 app = new Vue(
-{ el: '#app',
+{ 
+  el: '#app',
   data:{  message:"This will be a list of vessels.",
   vessels:[]} 
   }
 );
+button = $("div button");
 });
 
 
