@@ -1,12 +1,16 @@
 var app;
 var button = $("div button")
 
+$(document).ready(function(){
 app = new Vue(
 { el: '#app',
   data:{  message:"This will be a list of vessels.",
   vessels:[]} 
   }
 );
+});
+
+
 
 Vue.component('vessel-item', {
 	props: ['vessel'],
