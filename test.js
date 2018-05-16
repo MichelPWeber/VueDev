@@ -10,6 +10,9 @@ app = new Vue(
   }
 );
 button = $("div button");
+button.on("click", function(){
+  GetData();
+});
 });
 
 
@@ -20,9 +23,7 @@ Vue.component('vessel-item', {
 }
 );
 
-button.on("click", function(){
-  GetData();
-});
+
 
 function GetData(){
   $.ajax({url:"https://www.wsdot.wa.gov/Ferries/API/Vessels/rest/vessellocations?apiaccesscode=7ff7eebd-711c-4126-830c-eab1aeb925c0",
