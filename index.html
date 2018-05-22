@@ -9,6 +9,25 @@
   <header>
     <div id="accessCode" style="display:hidden;"></div>
   </header>
+     <!-- component template -->
+<script type="text/x-template" id="grid-template">
+  <table>
+    <thead>
+      <tr>
+        <th v-for="key in columns">
+          {{ key }}
+         </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="entry in data">
+        <td v-for="key in columns">
+          {{entry[key]}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</script>
   <h1>Vue project</h1>
    <div id="main">
 
@@ -16,13 +35,12 @@
     <p>Vessels of Washington State</p>
    {{message}}
 
-  <ul>
     <vessel-item
-      v-for="vessel in vessels"
-      v-bind:vessel="vessel"
-      v-bind:key="vessel.VesselID">
+     :data="vessels"
+     :columns="gridColumns">
     </vessel-item>
-  </ul>
+
+  
   </div> 
  <button>Update</button>
 </div>
