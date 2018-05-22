@@ -14,7 +14,7 @@ app = new Vue(
   el: '#app',
   data:{  
   message: "This will be a list of vessels.",
-  gridColumns: ['VesselName', 'Speed', 'Latitude','Longitude'],
+  gridColumns: ['VesselName', 'Speed', 'Latitude','Longitude', 'ArrivingTerminalName'],
   vessels:[]} 
   }
 );
