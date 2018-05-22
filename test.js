@@ -2,27 +2,28 @@ var app;
 var button;
 
 $(document).ready(function(){
+	
+Vue.component('vessel-item', {
+	template: "#grid-template",
+	props: { data: Array, columns: Array},
+	}
+);
+
 app = new Vue(
 { 
   el: '#app',
-  data:{  message:"This will be a list of vessels.",
+  data:{  
+  message: "This will be a list of vessels.",
+  gridColumns: ['VesselName', 'Speed', 'Latitude','Longitude'],
   vessels:[]} 
   }
 );
+	
 button = $("div button");
 button.on("click", function(){
   GetData();
 });
 });
-
-
-
-Vue.component('vessel-item', {
-	props: ['vessel'],
-  template: '<li>{{vessel.VesselName}}</li>'
-}
-);
-
 
 
 function GetData(){
