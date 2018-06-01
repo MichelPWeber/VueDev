@@ -37,7 +37,9 @@
 </script>
 
 <script type="text/x-template" id="graph-template">
-
+<g>
+	<rect x="10" y="10" width="500" height="500"></rect>
+</g>
 </script>
 
 
@@ -65,8 +67,10 @@
                        </div>
                        <div id="Graph" class="tab-pane fade">
                           <div class="text-center">{{message}}</div>
-						  <graph-vessels :data="vessels">
-						  </graph-vessels>
+						  <svg width="600" height="600">
+							<graph-vessels :data="vessels">
+							</graph-vessels>
+						  </svg>
                        </div>
                    </div>
 
