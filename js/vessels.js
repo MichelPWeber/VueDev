@@ -9,11 +9,17 @@ Vue.component('vessel-item', {
 	}
 );
 
+Vue.component('graph-vessels', {
+	template: "#graph-template",
+	props: { data: Array},
+	}
+);
+
 app = new Vue(
 { 
   el: '#app',
   data:{  
-  message: "This will be a list of vessels.",
+  message: "Vessel data: location.",
   gridColumns: ['VesselName', 'Speed', 'Latitude','Longitude', 'ArrivingTerminalName'],
   vessels:[]} 
   }
