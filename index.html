@@ -45,11 +45,24 @@
                    <p>Vessels of Washington State</p>
                   
                </div>
+              
                <div id="app">
                    <div class="text-center">{{message}}</div>
-                       <vessel-item :data="vessels"
-                                    :columns="gridColumns">
-                       </vessel-item>
+                   <ul class="nav nav-pills">
+                       <li class="active"><a data-toggle="pill" href="#Table">Table</a></li>
+                       <li>               <a data-toggle="pill" href="#Graph">X-Y Graph</a></li>
+                   </ul>
+
+                   <div class="tab-content">
+                       <div id="Table" class="tab-pane fade in active">
+                           <vessel-item :data="vessels"
+                                        :columns="gridColumns">
+                           </vessel-item>
+                       </div>
+                       <div id="Graph" class="tab-pane fade">
+                          {{message}}
+                       </div>
+                   </div>
 
                        <button class="btn btn-default center-block">Update</button>
                    </div>
