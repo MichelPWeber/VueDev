@@ -7,12 +7,12 @@
     <!--<link rel="stylesheet" type="text/css" href="css/vessels.css">-->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/custom.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-      <script src=/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+  
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.js"></script>
     <script src="js/vessels.js"></script>
+	
   <header>
     <div id="accessCode" style="display:hidden;"></div>
   </header>
@@ -36,6 +36,10 @@
   </table>
 </script>
 
+<script type="text/x-template" id="graph-template">
+
+</script>
+
 
    <div class="container-fluid" id="main">
        <div class="row">
@@ -46,14 +50,13 @@
                    <p>Vessels of Washington State</p>
                   
                </div>
-              
+               <ul class="nav nav-pills">
+                   <li class="active"><a data-toggle="pill" href="#Table">Table</a></li>
+                   <li>               <a data-toggle="pill" href="#Graph">X-Y Graph</a></li>
+               </ul>
+			   
                <div id="app">
-                   <div class="text-center">{{message}}</div>
-                   <ul class="nav nav-pills">
-                       <li class="active"><a data-toggle="pill" href="#Table">Table</a></li>
-                       <li>               <a data-toggle="pill" href="#Graph">X-Y Graph</a></li>
-                   </ul>
-
+                   <div class="text-center"></div>
                    <div class="tab-content">
                        <div id="Table" class="tab-pane fade in active">
                            <vessel-item :data="vessels"
@@ -61,7 +64,9 @@
                            </vessel-item>
                        </div>
                        <div id="Graph" class="tab-pane fade">
-                          {{message}}
+                          <div class="text-center">{{message}}</div>
+						  <graph-vessels :data="vessels">
+						  </graph-vessels>
                        </div>
                    </div>
 
