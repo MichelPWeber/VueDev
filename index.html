@@ -39,6 +39,10 @@
 <script type="text/x-template" id="graph-template">
 <g>
 	<rect x="10" y="10" width="500" height="500"></rect>
+	
+	<g v-for="vessel in data">
+	<circle :cx="(vessel.Longitude - longCenter)*250+250" :cy="(vessel.Latitude-latCenter)*250+250" r="1" stroke="black"/>
+	</g>
 </g>
 </script>
 
@@ -69,6 +73,7 @@
                           <div class="text-center">{{message}}</div>
 						  <svg width="600" height="600">
 							<graph-vessels :data="vessels">
+								
 							</graph-vessels>
 						  </svg>
                        </div>
