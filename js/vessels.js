@@ -11,7 +11,7 @@ Vue.component('vessel-item', {
 
 Vue.component('graph-vessels', {
 		template: "#graph-template",
-		props: { data: Array, history: Array},
+		props: { data: Array, history: Array, status: String},
 		computed: {
 			latCenter: function(){
 				var max = -999;
@@ -72,7 +72,7 @@ app = new Vue(
 { 
   el: '#app',
   data:{  
-  message: "Vessel data: location.",
+  message: "",
   gridColumns: ['VesselName', 'Speed', 'Latitude','Longitude', 'ArrivingTerminalName'],
   vesselHistory: [],
   vessels:[]},
@@ -92,6 +92,9 @@ app = new Vue(
 		  $.ajax({url:"https://www.wsdot.wa.gov/Ferries/API/Vessels/rest/vessellocations?apiaccesscode=7ff7eebd-711c-4126-830c-eab1aeb925c0",
           dataType: "jsonp",
          success: function(result){
+			 app.message = "Last update: " + $.now();
+			 var dt = new Date();
+			 app.message = "Last update: " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 			 app.UpdateHistory(app.vessels);
 			app.vessels = result;
          }});
@@ -99,7 +102,7 @@ app = new Vue(
 	  UpdateHistory(vesselData){
 		  $.each(vesselData, function(key, value){
 			//app.vesselHistory.push([value.VesselID, value.Latitude, value.Longitude]);  
-			if (app.NumberOfWithID(value.VesselID, app.vesselHistory) < 10)
+			if (app.NumberOfWithID(value.VesselID, app.vesselHistory) < 50)
 			{
 				app.vesselHistory.push({id:value.VesselID, lat:value.Latitude, lng:value.Longitude});
 			}
