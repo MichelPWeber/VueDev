@@ -13,10 +13,8 @@ function Vessel(name, id, speed, arrivingTerminalName, position, history)
 		this.id = id;
 		this.Speed = speed;
 		this.ArrivingTerminalName = arrivingTerminalName;
-		this.Latitude = position.lat;
-		this.Longitude = position.lng;
 		this.history = history;
-		
+		this.position = position;
 		this.HistoryLine = "0,0 100,100";
 }
 
@@ -30,7 +28,7 @@ Vue.component('vessel-item', {
 
 Vue.component('graph-vessels', {
 		template: "#graph-template",
-		props: { data: Array, history: Array, status: String, stateOutline: Array},
+		props: { data: Array, history: Array, status: String, outline: Array},
 		computed: {
 			latCenter: function(){
 				var max = -999;
@@ -106,13 +104,18 @@ app = new Vue(
   stateOutline: [],
   vessels:[],
   latCenter: 0,
-  lngCenter: 0},
+  lngCenter: 0,
+  scale: 250,
+  xOffset: 250,
+  yOffset: 250},
   	mounted(){
 		// set up timer
 		this.startTimer();
 		this.GetVesselData();
-		this.GetStateData();
 		}, 
+	created: function(){
+		//this.GetStateData();	
+		},
   methods: {
 	  startTimer(){
 		  window.setInterval(this.timerTick, 1000*60);
@@ -124,19 +127,29 @@ app = new Vue(
 		  $.ajax({url:"https://www.wsdot.wa.gov/Ferries/API/Vessels/rest/vessellocations?apiaccesscode=7ff7eebd-711c-4126-830c-eab1aeb925c0",
           dataType: "jsonp",
          success: function(result){
-			 app.message = "Last update: " + $.now();
 			 var dt = new Date();
 			 app.message = "Last update: " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+			 app.CalculateCenters(result);
 			 app.UpdateVesselData(result);
 			 app.UpdateHistory(result);
-			 app.CalculateCenters();
+			 app.GetStateData();
          }});
 	  },
-	  CalculateCenters()
+	  NormalizePosition(lat, lng)
+	  {
+		  var normalLat = 0;
+		  var normalLng = 0;
+		  
+		  normalLat = (lat-this.latCenter)*this.scale + this.xOffset;
+		  normalLng = (lng-this.lngCenter)*this.scale + this.yOffset;
+		  
+		  return {lat: normalLat, lng: normalLng};
+	  },
+	  CalculateCenters(vesselData)
 	  {
 		  var max = -999;
 			var min = 999;
-			$.each(app.vessels, function(key, value){
+			$.each(vesselData, function(key, value){
 				if (value.Latitude > max) max = value.Latitude;
 				if (value.Latitude < min) min = value.Latitude;
 			});
@@ -146,7 +159,7 @@ app = new Vue(
 			max = -999;
 			min = 999;
 			
-			$.each(app.vessels, function(key, value){
+			$.each(vesselData, function(key, value){
 					if (value.Longitude > max) max = value.Longitude;
 					if (value.Longitude < min) min = value.Longitude;
 				});
@@ -157,8 +170,10 @@ app = new Vue(
 	  UpdateVesselData(vesselData)
 	  {
 		  $.each(vesselData, function(key, vessel){
-			  var position = new Position(vessel.Latitude, vessel.Longitude);
+			  var position = app.NormalizePosition(vessel.Latitude, vessel.Longitude);
 			  var v = new Vessel(vessel.VesselName, vessel.VesselID, vessel.Speed, vessel.ArrivingTerminalName, position, []);
+			  v.Latitude = vessel.Latitude;
+			  v.Longitude = vessel.Longitude;
 			  var currentVessel = app.vessels.find(x => x.id === vessel.VesselID);
 			  if (currentVessel == null)
 			  {
@@ -166,25 +181,46 @@ app = new Vue(
 			  }
 			  else
 			  {
+				  currentVessel.Longitude = vessel.Longitude;
+				  currentVessel.Latitude = vessel.Latitude;
 				  currentVessel.position = position;
 			  }
 		  });
 	  },
 	  GetStateData(){
+		  if (this.stateOutline.length > 0)
+			  return;
 		var state = $.parseJSON(WashingtonState);
-		stateOutline = state.geometry.coordinates;
+		var parentApp = this;
+
+		for (var i = 0; i < state.geometry.coordinates.length; i++)
+		{
+			for (var j = 0; j < state.geometry.coordinates[i].length; j++)
+			{
+				var line = "";
+				for (var k = 0; k < state.geometry.coordinates[i][j].length; k++)
+				{
+					var coordinate = this.NormalizePosition(state.geometry.coordinates[i][j][k][1], state.geometry.coordinates[i][j][k][0]);
+					line = line + coordinate.lng + "," + coordinate.lat + " " ;
+				}
+				console.log(line);
+				state.geometry.coordinates[i][j] = line;
+			}
+		}
+		
+		this.stateOutline = state.geometry.coordinates;
 	  },
 	  UpdateHistory(vesselData){
 		  $.each(vesselData, function(key, vessel){
 			  var vesselInfo = app.vessels.find(x => x.id === vessel.VesselID);
 			  if (vesselInfo.history.length < 50)
 			  {
-				  var position = new Position(vessel.Latitude, vessel.Longitude);
+				  var position = app.NormalizePosition(vessel.Latitude, vessel.Longitude);
 				vesselInfo.history.push(position);
 			  }
 			  vesselInfo.HistoryLine = "";
 			  $.each(vesselInfo.history, function(key, value){
-				  vesselInfo.HistoryLine = vesselInfo.HistoryLine + ((value.lng-app.lngCenter)*250+250) + "," + ((value.lat - app.latCenter)*250+250) + " ";
+				  vesselInfo.HistoryLine = vesselInfo.HistoryLine + value.lng + "," + value.lat + " ";
 			  });
 		  });
 	  },
