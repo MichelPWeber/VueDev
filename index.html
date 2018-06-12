@@ -38,9 +38,6 @@
 
 <script type="text/x-template" id="graph-template">
 <g>
-
-	<g v-html="makeGrid" class="grid"></g>
-	
 	<g v-for="vessel in data" class="vessel">
 		<circle :cx="vessel.position.lng" :cy="vessel.position.lat" r="1" stroke="blue"/>
 	</g>
@@ -49,9 +46,10 @@
 	</g>
 	<g v-for="segment in outline" class="stateOutline">
 		<g v-for="coordinates in segment">
-			<polyline v-bind:points="coordinates" style="fill:none;stroke:green;stroke-width:1" />
+			<polyline v-bind:points="coordinates" style="fill:#119911;stroke:green;stroke-width:1" />
 		</g>
 	</g>
+	<g v-html="makeGrid" class="grid"></g>
 </g>
 </script>
 
