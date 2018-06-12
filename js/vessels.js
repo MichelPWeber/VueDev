@@ -105,9 +105,9 @@ app = new Vue(
   vessels:[],
   latCenter: 0,
   lngCenter: 0,
-  scale: 250,
-  xOffset: 250,
-  yOffset: 250},
+  scale: 300,
+  xOffset: 300,
+  yOffset: 300},
   	mounted(){
 		// set up timer
 		this.startTimer();
@@ -142,6 +142,9 @@ app = new Vue(
 		  
 		  normalLat = (lat-this.latCenter)*this.scale + this.xOffset;
 		  normalLng = (lng-this.lngCenter)*this.scale + this.yOffset;
+		  
+		  normalLat = (this.latCenter-lat)*this.scale + this.xOffset;
+		  
 		  
 		  return {lat: normalLat, lng: normalLng};
 	  },
