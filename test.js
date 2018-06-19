@@ -19,10 +19,6 @@ app = new Vue(
   }
 );
 	
-button = $("div button");
-button.on("click", function(){
-  GetData();
-});
 });
 
 
