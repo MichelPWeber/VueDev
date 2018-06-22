@@ -28,13 +28,13 @@ Vue.component('vessel-item', {
 
 graphComponent = Vue.component('graph-vessels', {
 		template: "#graph-template",
-		props: { data: Array, history: Array, status: String, outline: Array},
+		props: { data: Array, history: Array, status: String, outline: Array, dragStarted: Number},
 		mounted() { 
 			$("#map").on("mousewheel", function(event){
 			//	graphComponent.zoom(event);
 				var min = 10;
 				var step = 10;
-				var max = 1000;
+				var max = 5000;
 				var box = $("#map").attr("viewBox").split(" ");
 				var viewbox = new Object();
 				viewbox.x = box[0];
@@ -129,6 +129,11 @@ app = new Vue(
   scale: 300,
   xOffset: 300,
   yOffset: 300,
+  dragStarted: false,
+  dragStartX: 0,
+  dragStartY: 0,
+  offsetX: 0,
+  offsetY: 0,
   timerTickCount: 0,
   timerInterval: 60},
   	mounted(){
@@ -137,6 +142,30 @@ app = new Vue(
 		this.GetVesselData();
 		// set up event handling
 		$("#map").on("mousewheel", function(event){ app.handleZoom(event);});
+		
+		$("#map").mousedown(function(event){
+			this.dragStarted = true;
+			console.log(this.dragStarted);
+			this.dragStartX = event.clientX;
+			this.dragStartY = event.clientY;
+		});
+		
+		$("#map").mousemove(function(event){
+			console.log(this.dragStarted);
+			if (this.dragStarted == true)
+			{
+				this.offsetX = event.clientX - this.dragStartX;
+				this.offsetY = event.clientY - this.dragStartY;
+				var offset = "translate("+this.offsetX+","+this.offsetY+")";
+				$("#top").attr("transform", offset);
+			}
+		});
+		
+		$("#map").mouseup(function(event){
+			this.dragStarted = false;
+			console.log(this.dragStarted);
+		});
+
 		}, 
 	created: function(){
 		//this.GetStateData();	
