@@ -1,5 +1,5 @@
 var app;
-var button;
+var graphComponent;
 
 function Position(lat, lng)
 {
@@ -26,30 +26,51 @@ Vue.component('vessel-item', {
 	}
 );
 
-Vue.component('graph-vessels', {
+graphComponent = Vue.component('graph-vessels', {
 		template: "#graph-template",
 		props: { data: Array, history: Array, status: String, outline: Array},
+		mounted() { 
+			$("#map").on("mousewheel", function(event){
+			//	graphComponent.zoom(event);
+				var min = 10;
+				var step = 10;
+				var max = 1000;
+				var box = $("#map").attr("viewBox").split(" ");
+				var viewbox = new Object();
+				viewbox.x = box[0];
+				viewbox.y = box[1];
+				viewbox.width = box[2];
+				viewbox.height = box[3];
+				
+				if (event.originalEvent.wheelDelta > 0)
+				{
+					if (viewbox.width > min)
+					{
+						viewbox.height = viewbox.height / viewbox.width * (parseInt(viewbox.width) - step);
+						viewbox.width = parseInt(viewbox.width) - step;
+					}
+				}
+				else
+				{
+					if (viewbox.width < max)
+					{
+						viewbox.height = viewbox.height/ viewbox.width * (parseInt(viewbox.width) + step);
+						viewbox.width = parseInt(viewbox.width) + step;
+					}
+				}
+				
+				$("#map").attr("viewBox", "0 0 " + viewbox.width + " " + viewbox.height);
+				});
+		},
+		methods: {
+			wheel()
+			{
+				alert("Wheel!");
+			}
+		},
 		computed: {
-			latCenter: function(){
-				var max = -999;
-				var min = 999;
-				$.each(this.data, function(key, value){
-					if (value.Latitude > max) max = value.Latitude;
-					if (value.Latitude < min) min = value.Latitude;
-				});
+			zoom(event){
 				
-				var center = (max+min)/2;
-				return center;
-			},
-			longCenter: function(){
-				var max = -999;
-				var min = 999;
-				$.each(this.data, function(key, value){
-					if (value.Longitude > max) max = value.Longitude;
-					if (value.Longitude < min) min = value.Longitude;
-				});
-				
-				return (max+min)/2;
 			},
 			makeGrid: function(){
 				var i;
@@ -107,21 +128,34 @@ app = new Vue(
   lngCenter: 0,
   scale: 300,
   xOffset: 300,
-  yOffset: 300},
+  yOffset: 300,
+  timerTickCount: 0,
+  timerInterval: 60},
   	mounted(){
 		// set up timer
 		this.startTimer();
 		this.GetVesselData();
+		// set up event handling
+		$("#map").on("mousewheel", function(event){ app.handleZoom(event);});
 		}, 
 	created: function(){
 		//this.GetStateData();	
 		},
   methods: {
+	  handleZoom(event){
+		  console.log(event.originalEvent.wheelDelta);
+	  },
 	  startTimer(){
-		  window.setInterval(this.timerTick, 1000*60);
+		  window.setInterval(this.timerTick, 1000);
 	  },
 	  timerTick(){
-		  this.GetVesselData();
+		  ++this.timerTickCount;
+		  app.message = "Next update in " + parseInt(this.timerInterval - this.timerTickCount) + " seconds.";
+		  if (this.timerTickCount >= 60)
+		  {
+			this.timerTickCount = 0;
+			this.GetVesselData();
+		  }
 	  },
 	  GetVesselData(){
 		  $.ajax({url:"https://www.wsdot.wa.gov/Ferries/API/Vessels/rest/vessellocations?apiaccesscode=7ff7eebd-711c-4126-830c-eab1aeb925c0",
@@ -206,7 +240,6 @@ app = new Vue(
 					var coordinate = this.NormalizePosition(state.geometry.coordinates[i][j][k][1], state.geometry.coordinates[i][j][k][0]);
 					line = line + coordinate.lng + "," + coordinate.lat + " " ;
 				}
-				console.log(line);
 				state.geometry.coordinates[i][j] = line;
 			}
 		}
@@ -216,7 +249,7 @@ app = new Vue(
 	  UpdateHistory(vesselData){
 		  $.each(vesselData, function(key, vessel){
 			  var vesselInfo = app.vessels.find(x => x.id === vessel.VesselID);
-			  if (vesselInfo.history.length < 50)
+			  if (vesselInfo.history.length < 500)
 			  {
 				  var position = app.NormalizePosition(vessel.Latitude, vessel.Longitude);
 				vesselInfo.history.push(position);
