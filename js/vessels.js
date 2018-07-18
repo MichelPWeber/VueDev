@@ -30,48 +30,12 @@ graphComponent = Vue.component('graph-vessels', {
 		template: "#graph-template",
 		props: { data: Array, history: Array, status: String, outline: Array, dragStarted: Number},
 		mounted() { 
-			$("#map").on("mousewheel", function(event){
-			//	graphComponent.zoom(event);
-				var min = 10;
-				var step = 10;
-				var max = 5000;
-				var box = $("#map").attr("viewBox").split(" ");
-				var viewbox = new Object();
-				viewbox.x = box[0];
-				viewbox.y = box[1];
-				viewbox.width = box[2];
-				viewbox.height = box[3];
-				
-				if (event.originalEvent.wheelDelta > 0)
-				{
-					if (viewbox.width > min)
-					{
-						viewbox.height = viewbox.height / viewbox.width * (parseInt(viewbox.width) - step);
-						viewbox.width = parseInt(viewbox.width) - step;
-					}
-				}
-				else
-				{
-					if (viewbox.width < max)
-					{
-						viewbox.height = viewbox.height/ viewbox.width * (parseInt(viewbox.width) + step);
-						viewbox.width = parseInt(viewbox.width) + step;
-					}
-				}
-				
-				$("#map").attr("viewBox", "0 0 " + viewbox.width + " " + viewbox.height);
-				});
+			var test = $("#map").svgPanZoom();
 		},
 		methods: {
-			wheel()
-			{
-				alert("Wheel!");
-			}
+
 		},
 		computed: {
-			zoom(event){
-				
-			},
 			makeGrid: function(){
 				var i;
 				var width = 600;
@@ -140,40 +104,12 @@ app = new Vue(
 		// set up timer
 		this.startTimer();
 		this.GetVesselData();
-		// set up event handling
-		$("#map").on("mousewheel", function(event){ app.handleZoom(event);});
-		
-		$("#map").mousedown(function(event){
-			this.dragStarted = true;
-			console.log(this.dragStarted);
-			this.dragStartX = event.clientX;
-			this.dragStartY = event.clientY;
-		});
-		
-		$("#map").mousemove(function(event){
-			console.log(this.dragStarted);
-			if (this.dragStarted == true)
-			{
-				this.offsetX = event.clientX - this.dragStartX;
-				this.offsetY = event.clientY - this.dragStartY;
-				var offset = "translate("+this.offsetX+","+this.offsetY+")";
-				$("#top").attr("transform", offset);
-			}
-		});
-		
-		$("#map").mouseup(function(event){
-			this.dragStarted = false;
-			console.log(this.dragStarted);
-		});
-
 		}, 
 	created: function(){
 		//this.GetStateData();	
 		},
   methods: {
-	  handleZoom(event){
-		  console.log(event.originalEvent.wheelDelta);
-	  },
+
 	  startTimer(){
 		  window.setInterval(this.timerTick, 1000);
 	  },
